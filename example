@@ -20,3 +20,26 @@ FileHandle = CreateFile("file1.txt", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN
 Если новый файл то
 FileHandle = CreateFile("file1.txt", GENERIC_WRITE , 0, NULL, CREATE_ALWAYS, 0, NULL);
 CloseHandle(FileHandle);
+
+Сравнение содержимого массивов
+ 
+int main()
+{
+    int massOne[4] = {1,2,3,4};
+    int massTwo[4] = {1,2,3,4};
+ 
+    int i,j;
+ 
+    for(i=0; i<4; i++)
+    {
+        for(j=0; j<4; j++)
+        {
+            if( massOne[i] == massTwo[j])
+            {
+                cout << "massOne[" << i << "]= " << massOne[i] << "  == massTwo[" << j << "]=" << massTwo[j] << endl;
+            }
+        }
+    }
+ 
+    return 0;
+}
