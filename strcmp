@@ -1,0 +1,28 @@
+Сравнение массивов.
+
+#include <iostream>
+#include <cstring>
+
+int mystrcmp(char *a, char* b)
+{
+    while(*a||*b){
+      if(*a!=*b){ return *a-*b;}
+        a++;
+        b++;
+    }
+       
+return 0; 
+}
+
+int main(int argc, char **argv) {
+    
+    char a[] = "abcdea";
+    char b[] = "abcdef";
+    
+    
+    std::cout << "mystrcmp" << a << " > " << b << " : " << (mystrcmp(a,b)) << std::endl;
+    
+    std::cout << "strcmp" << a << " > " << b << " : " << (strcmp(a,b)) << std::endl;
+    
+    return 0;
+}
