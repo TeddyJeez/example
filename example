@@ -1,3 +1,13 @@
+OPENDIALOG
+if (OpenDialog1->Execute()) {
+  ShowMessage(OpenDialog1->FileName); // полный путь, включая имя файла и расширение
+  ShowMessage(ExtractFilePath(OpenDialog1->FileName)); // путь к файлу
+  ShowMessage(ExtractFileName(OpenDialog1->FileName)); // имя файла с расширением
+  ShowMessage(ExtractFileExt(OpenDialog1->FileName)); // расширение файла
+}
+
+--------------------------------------------------------------------------------------
+
 Дан массив размера N и целое число K (1 ≤ K ≤ N). Перед элементом массива с
 порядковым номером K вставить новый элемент с нулевым значением.
 
