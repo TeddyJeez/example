@@ -1,0 +1,130 @@
+------Пример кода: Парсер конфиг файла с типами номеров--------
+
+
+int pr=0;
+int prc=0;
+unsigned char LastChar=0;
+
+char *ptrs,*ptre,*tptre,*tptr;
+
+MyNumbers[FIndex][SIndex] = new NUMBERS;
+memset(MyNumbers[FIndex][SIndex],0,sizeof(NUMBERS));
+AnsiString mt;
+
+strcpy(MyNumbers[FIndex][SIndex]->Region,Country.c_str());  //копирование строк
+strcpy(MyNumbers[FIndex][SIndex]->Country,CountryName.c_str());  //копирование строк
+MyNumbers[FIndex][SIndex]->Enabled=flag;
+
+TListBox *MyListBox;    //указатель
+if(FIndex==0) MyListBox=_Sect0;
+if(FIndex==1) MyListBox=_Sect1;
+if(FIndex==2) MyListBox=_Sect2;
+
+for(int ms = 1; ms < MyListBox->Items->Count; ms++)
+		{
+pr=0;
+prc=0;
+
+MyNumbers[FIndex][SIndex]->Descr[ms-1] = new NUMBERDESCRIPTOR;
+memset(MyNumbers[FIndex][SIndex]->Descr[ms-1],0,sizeof(NUMBERDESCRIPTOR));
+mt = MyListBox->Items->Strings[ms];
+
+
+ptrs = mt.c_str();
+if(*ptrs=='#') MyNumbers[FIndex][SIndex]->Descr[ms-1]->Enabled = false;
+   else MyNumbers[FIndex][SIndex]->Descr[ms-1]->Enabled = true;
+
+tptr = strchr(ptrs,'[');
+
+if((strstr(ptrs,"white")!=NULL)&&(tptr>strstr(ptrs,"white")))     MyNumbers[FIndex][SIndex]->Descr[ms-1]->Color = 'W';
+if((strstr(ptrs,"black")!=NULL)&&(tptr>strstr(ptrs,"black")))     MyNumbers[FIndex][SIndex]->Descr[ms-1]->Color = 'B';
+if((strstr(ptrs,"yellow")!=NULL)&&(tptr>strstr(ptrs,"yellow")))   MyNumbers[FIndex][SIndex]->Descr[ms-1]->Color = 'Y';
+if((strstr(ptrs,"blue")!=NULL)&&(tptr>strstr(ptrs,"blue")))       MyNumbers[FIndex][SIndex]->Descr[ms-1]->Color = 'b';
+if((strstr(ptrs,"red")!=NULL)&&(tptr>strstr(ptrs,"red")))         MyNumbers[FIndex][SIndex]->Descr[ms-1]->Color = 'r';
+if((strstr(ptrs,"unknown")!=NULL)&&(tptr>strstr(ptrs,"unknown"))) MyNumbers[FIndex][SIndex]->Descr[ms-1]->Color = 'u';
+ptrs = tptr;
+ptrs++;
+
+MyNumbers[FIndex][SIndex]->Descr[ms-1]->CharsNumber=0;
+
+for(;;){
+	if(*ptrs==']') break;
+	if((*ptrs=='D')||(*ptrs=='d')||(*ptrs=='C')||(*ptrs=='c')) {
+				if(LastChar!=0) {ptrs++;LastChar=0;continue;}
+				MyNumbers[FIndex][SIndex]->Descr[ms-1]->Type[MyNumbers[FIndex][SIndex]->Descr[ms-1]->CharsNumber] = *ptrs;
+				MyNumbers[FIndex][SIndex]->Descr[ms-1]->TypeChar[MyNumbers[FIndex][SIndex]->Descr[ms-1]->CharsNumber] = prc;
+				ptrs++;
+				MyNumbers[FIndex][SIndex]->Descr[ms-1]->CharsNumber++;
+				continue;
+				}
+
+	if(*ptrs=='{') {
+		mzpt:;
+		if(ptrs==NULL) break;
+		tptre=NULL;
+		ptre = strchr(ptrs,'}');
+		tptre = strchr(ptrs,',');
+		if((tptre!=NULL)&&(tptre<ptre)){
+			*tptre=0;
+			}
+		  else {*ptre=0;tptre=NULL;}
+
+		if(*ptrs=='{') ptrs++;
+
+		for(int i=0;i<MaxTable;i++) if(strstr(ptrs,Table[i][0])==ptrs) {sscanf(Table[i][1],"%d",&pr);break;}
+
+		if(strstr(ptrs,"cs:\"")==ptrs) {
+				LastChar = *(ptrs+4);
+				char Symb = *(ptre+1);
+				if(Symb=='c') LastChar = LastChar+32;
+				MyNumbers[FIndex][SIndex]->Descr[ms-1]->Type[MyNumbers[FIndex][SIndex]->Descr[ms-1]->CharsNumber] = LastChar;
+				MyNumbers[FIndex][SIndex]->Descr[ms-1]->TypeChar[MyNumbers[FIndex][SIndex]->Descr[ms-1]->CharsNumber] = 24;
+				pr=0;prc=0;
+				MyNumbers[FIndex][SIndex]->Descr[ms-1]->CharsNumber++;
+				if(tptre!=NULL) {ptrs=tptre+1;goto mzpt;}
+				ptrs=ptre+1;continue;}
+
+		if(strstr(ptrs,"cs:$")==ptrs) {
+				for(int i=0;i<MaxTable;i++) if(strcmp(ptrs,Table[i][0])==NULL) {sscanf(Table[i][1],"%d",&pr);break;}
+				prc=pr;
+				if(tptre!=NULL) {ptrs=tptre+1;goto mzpt;}
+				ptrs=ptre+1;continue;}
+
+		if(strstr(ptrs,"vs+")==ptrs) {
+				prc=pr;
+				if(tptre!=NULL) {ptrs=tptre+1;goto mzpt;}
+				ptrs=ptre+1;continue;}
+
+		if(strstr(ptrs,"del")==ptrs) {
+				MyNumbers[FIndex][SIndex]->Descr[ms-1]->Type[MyNumbers[FIndex][SIndex]->Descr[ms-1]->CharsNumber] = *(ptrs+3);
+				MyNumbers[FIndex][SIndex]->Descr[ms-1]->TypeChar[MyNumbers[FIndex][SIndex]->Descr[ms-1]->CharsNumber] = pr;
+				MyNumbers[FIndex][SIndex]->Descr[ms-1]->CharsNumber++;
+				if(tptre!=NULL) {ptrs=tptre+1;goto mzpt;}
+				ptrs=ptre+1;continue;}
+
+		MyNumbers[FIndex][SIndex]->Descr[ms-1]->Type[MyNumbers[FIndex][SIndex]->Descr[ms-1]->CharsNumber] = ' ';
+		MyNumbers[FIndex][SIndex]->Descr[ms-1]->TypeChar[MyNumbers[FIndex][SIndex]->Descr[ms-1]->CharsNumber] = pr;
+		MyNumbers[FIndex][SIndex]->Descr[ms-1]->CharsNumber++;
+
+		if(tptre!=NULL) {ptrs=tptre+1;goto mzpt;}
+		ptrs=ptre+1;
+		continue;
+		}
+	 ptrs++;
+	}
+
+MyNumbers[FIndex][SIndex]->Descr[ms-1]->Comment[0]=0;
+ptrs = strchr(ptrs,'#');
+if(ptrs!=NULL) {
+		strcpy(MyNumbers[FIndex][SIndex]->Descr[ms-1]->Comment,ptrs+1);
+		if(strstr(ptrs,"#$TWO")==ptrs){
+				ptrs = strchr(ptrs,'[');ptrs++;
+				sscanf(ptrs,"%d",&MyNumbers[FIndex][SIndex]->Descr[ms-1]->CharsNumberUp);
+				ptrs = strchr(ptrs,'[');ptrs++;
+				sscanf(ptrs,"%d",&MyNumbers[FIndex][SIndex]->Descr[ms-1]->CharsNumberDown);
+				MyNumbers[FIndex][SIndex]->Descr[ms-1]->TwoLineEnabled=true;
+				ptrs = strchr(ptrs,']');ptrs++;
+				strcpy(MyNumbers[FIndex][SIndex]->Descr[ms-1]->Comment,ptrs+1);
+				}
+		}
+}
